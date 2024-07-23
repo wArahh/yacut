@@ -3,6 +3,7 @@ from wtforms import SubmitField, URLField, ValidationError
 from wtforms.validators import URL, DataRequired
 
 from .models import URLMap
+from .utils import ACCEPTED_SYMBOLS
 
 
 class URLForm(FlaskForm):
@@ -19,4 +20,6 @@ class URLForm(FlaskForm):
 
     def validate_custom_id(self, field):
         if URLMap.query.filter_by(short=field.data).first():
-            raise ValidationError('Извините, данная ссылка уже используется')
+            raise ValidationError('Предложенный вариант короткой ссылки уже существует.')
+        elif any(char not in set(ACCEPTED_SYMBOLS) for char in field):
+            raise ValidationError('Нельзя использовать запрещенные символы')

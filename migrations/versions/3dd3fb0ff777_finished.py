@@ -1,8 +1,8 @@
-"""datarequiewd deleted
+"""finished
 
-Revision ID: 5bae585a3d88
+Revision ID: 3dd3fb0ff777
 Revises: 
-Create Date: 2024-07-23 16:06:50.531866
+Create Date: 2024-07-23 23:14:06.478341
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5bae585a3d88'
+revision = '3dd3fb0ff777'
 down_revision = None
 branch_labels = None
 depends_on = None
