@@ -15,14 +15,22 @@ python -m venv venv
 ```
 pip install -r requirements.txt
 ```
+### создайте .env файл по примеру:
+```
+FLASK_APP=yacut
+FLASK_DEBUG=1
+DATABASE_URI=sqlite:///db.sqlite3
+SECRET_KEY=YOUR_SECRET_KEY
+```
 ### запустите проект командой
 ```
 flask run
 ```
-### документация лежит в фале 
+### документация к api лежит в файле 
 ```
 openapi.yml
 ```
+
 
 ## Стек
 - Python 3.9
