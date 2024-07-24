@@ -6,4 +6,4 @@ class Config(object):
     SECRET_KEY = os.getenv('SECRET_KEY')
 
 
-BASE_URL = os.getenv('BASE_URL',  'http://localhost/')
+BASE_URL = os.getenv('BASE_URL', 'http://localhost/')
