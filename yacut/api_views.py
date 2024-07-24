@@ -1,22 +1,22 @@
 from flask import jsonify, request
-from werkzeug.exceptions import BadRequest
 
 from . import app, db
 from .models import URLMap
 from .views import generate_short_id
 from .error_handlers import InvalidAPIUsage
 from .utils import ACCEPTED_SYMBOLS
+from settings import BASE_URL
 
 required_field = '{must_set} является обязательным полем!'
 url_already_exists = 'Предложенный вариант короткой ссылки уже существует.'
-request_is_none = 'Нельзя отправить пустой запрос'
+request_is_none = 'Отсутствует тело запроса'
 unexpected_name = 'Указано недопустимое имя для короткой ссылки'
 url_not_exists = 'Указанный id не найден'
 
 
 @app.route('/api/id/', methods=['POST'])
 def generate_short_id_api():
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if data is None:
         raise InvalidAPIUsage(request_is_none, 400)
     if 'url' not in data:
@@ -27,12 +27,12 @@ def generate_short_id_api():
             raise InvalidAPIUsage(unexpected_name, 400)
     else:
         short_link = generate_short_id()
-    if URLMap.query.filter_by(short=short_link).first() is not None:
+    short = BASE_URL + short_link
+    if URLMap.query.filter_by(short=short).first() is not None:
         raise InvalidAPIUsage(url_already_exists, 400)
     urls = URLMap()
     urls.original = data['url']
-
-    urls.short = short_link
+    urls.short = short
     db.session.add(urls)
     db.session.commit()
     return jsonify(urls.to_dict()), 201
