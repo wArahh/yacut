@@ -12,7 +12,7 @@ def get_unique_short_id():
     if not form.validate_on_submit():
         return render_template("index.html", form=form)
     short = form.custom_id.data
-    if not short:
+    if short is None:
         short = generate_short_id()
     db.session.add(
         URLMap(
