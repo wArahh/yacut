@@ -1,5 +1,6 @@
 UNEXPECTED_NAME = 'Указано недопустимое имя для короткой ссылки'
-TOO_MANY_ATTEMPTS = 'Было потрачено слишком много попыток на генерацию short_id'
+TOO_MANY_ATTEMPTS = \
+    'Было потрачено слишком много попыток на генерацию short_id'
 URL_ALREADY_EXISTS = 'Предложенный вариант короткой ссылки уже существует.'
 MUST_SET_REQUIRED_FIELD = '{must_set} является обязательным полем!'
 REQUEST_IS_NONE = 'Отсутствует тело запроса'
@@ -12,7 +13,7 @@ REQUIRED_FIELD = 'Обязательное поле!'
 URLFIELD_ONLY = 'Поле для ссылки!'
 ACCEPT = 'Добавить'
 NOT_EXISTS_404 = 404
-ERROR_400 = 400
+BAD_REQUEST_400 = 400
 CREATED_201 = 201
 STATUS_OK_200 = 200
 MAX_ORIGINAL_LENGTH = 256

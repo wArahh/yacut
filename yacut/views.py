@@ -1,6 +1,6 @@
 from flask import redirect, render_template, url_for
 
-from . import app, db
+from . import app
 from .forms import URLForm
 from .models import URLMap
 
@@ -13,13 +13,7 @@ def assigning_link_view():
     short = form.custom_id.data
     if short is None:
         short = URLMap.generate_unique_short_id()
-    db.session.add(
-        URLMap(
-            original=form.original_link.data,
-            short=short,
-        )
-    )
-    db.session.commit()
+    URLMap.check_and_create(form.original_link.data, short)
     return render_template(
         "index.html",
         form=form,
@@ -33,6 +27,7 @@ def assigning_link_view():
 
 @app.route('/<string:short_id>', methods=['GET'])
 def redirect_to_url(short_id):
+    print(URLMap.get_object(short_id))
     return redirect(
-        URLMap.query.filter_by(short=short_id).first_or_404().original
+        URLMap.get_object(short_id).original
     )

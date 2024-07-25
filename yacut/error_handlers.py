@@ -1,7 +1,7 @@
 from flask import jsonify, render_template
 
-from .constants import NOT_EXISTS_404
 from . import app
+from .constants import NOT_EXISTS_404
 
 
 class InvalidAPIUsage(Exception):
