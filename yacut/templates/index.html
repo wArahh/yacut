@@ -5,6 +5,18 @@
   <p class="text-center my-4">
     Создайте короткую ссылку автоматически или предложите свой вариант
   </p>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
   <div class="container">
     <div class="row my-3">
       <div class="col-sm"></div>
@@ -14,13 +26,13 @@
           <div class="form-group">
             <input type="text" class="form-control form-control-lg py-2 mb-3" id="form-title" name="original_link" placeholder="Длинная ссылка" required>
             {% for error in form.original_link.errors %}
-            <p><span style="color:red">{{ error }}</span></p>
+              <p><span style="color:red">{{ error }}</span></p>
             {% endfor %}
           </div>
           <div class="form-group">
             <input type="text" class="form-control form-control-lg py-2 mb-3" id="form-link" name="custom_id" placeholder="Ваш вариант ссылки">
             {% for error in form.custom_id.errors %}
-            <p><span style="color:red">{{ error }}</span></p>
+              <p><span style="color:red">{{ error }}</span></p>
             {% endfor %}
           </div>
           <input type="submit" class="btn btn-primary" value="Создать">
@@ -29,21 +41,19 @@
       <div class="col-sm"></div>
     </div>
   </div>
-    <div class="container">
-        <div class="row ">
-            <div class="col-sm">
-            </div>
-            <div class="col-sm">
-                {% if short_link %}
-                <p class="text-center">
-                <h5 class="text-center">Ваша ссылка доступна по адресу:</h5>
-                <h5 class="text-center"><a href="{{ short_link }}">{{ short_link }}</a></h5>
-                </p>
-                {% endif %}
-            </div>
-            <div class="col-sm">
-            </div>
-        </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm"></div>
+      <div class="col-sm">
+        {% if short_link %}
+        <p class="text-center">
+          <h5 class="text-center">Ваша ссылка доступна по адресу:</h5>
+          <h5 class="text-center"><a href="{{ short_link }}">{{ short_link }}</a></h5>
+        </p>
+        {% endif %}
+      </div>
+      <div class="col-sm"></div>
     </div>
+  </div>
 </section>
 {% endblock %}

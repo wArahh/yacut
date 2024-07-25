@@ -1,4 +1,5 @@
 import os
+import string
 
 
 class Config(object):
@@ -7,3 +8,4 @@ class Config(object):
 
 
 BASE_URL = os.getenv('BASE_URL', 'http://localhost/')
+ACCEPTED_SYMBOLS = string.ascii_letters + string.digits

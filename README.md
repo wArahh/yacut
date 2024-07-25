@@ -22,6 +22,16 @@ FLASK_DEBUG=1
 DATABASE_URI=sqlite:///db.sqlite3
 SECRET_KEY=YOUR_SECRET_KEY
 ```
+### создайте базу данных командами:
+```angular2html
+flask db init
+```
+```angular2html
+flask db migrate
+```
+```angular2html
+flask db upgrade
+```
 ### запустите проект командой
 ```
 flask run

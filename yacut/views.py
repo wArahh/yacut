@@ -3,17 +3,16 @@ from flask import redirect, render_template, url_for
 from . import app, db
 from .forms import URLForm
 from .models import URLMap
-from .utils import generate_short_id
 
 
 @app.route('/', methods=['GET', 'POST'])
-def get_unique_short_id():
+def assigning_link_view():
     form = URLForm()
     if not form.validate_on_submit():
         return render_template("index.html", form=form)
     short = form.custom_id.data
     if short is None:
-        short = generate_short_id()
+        short = URLMap.generate_unique_short_id()
     db.session.add(
         URLMap(
             original=form.original_link.data,
