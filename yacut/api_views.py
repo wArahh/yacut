@@ -1,12 +1,9 @@
-import re
 from http import HTTPStatus
 
 from flask import jsonify, request
 
 from . import app
-from .constants import (DB_ERROR, MAX_SHORT_LENGTH, MUST_SET_REQUIRED_FIELD,
-                        REGEXP_ACCEPTED_SYMBOLS, REQUEST_IS_NONE,
-                        UNEXPECTED_NAME, URL_ALREADY_EXISTS, URL_NOT_EXISTS)
+from .constants import MUST_SET_REQUIRED_FIELD, REQUEST_IS_NONE, URL_NOT_EXISTS
 from .error_handlers import InvalidAPIUsage
 from .models import URLMap
 
@@ -22,29 +19,21 @@ def assigning_link():
                 must_set='"url"'
             ), HTTPStatus.BAD_REQUEST
         )
-    if 'custom_id' in data:
-        short = data['custom_id']
-        if URLMap.get_object(short).first() is not None:
-            raise InvalidAPIUsage(URL_ALREADY_EXISTS, HTTPStatus.BAD_REQUEST)
-        if (
-                len(short) > MAX_SHORT_LENGTH
-                or not re.match(REGEXP_ACCEPTED_SYMBOLS, short)
-        ):
-            raise InvalidAPIUsage(UNEXPECTED_NAME, HTTPStatus.BAD_REQUEST)
-        short = URLMap.create_object(data['url'], short).to_dict()
-    else:
-        short = URLMap.create_object(data['url']).to_dict()
-    try:
-        return jsonify(short), HTTPStatus.CREATED
-    except InvalidAPIUsage as error:
-        raise DB_ERROR.format(error=error)
+    short = data.get('custom_id')
+    return jsonify(
+        URLMap.create(
+            data['url'], short, is_api=True
+        ).to_dict() if short else URLMap.create(
+            data['url'], is_api=True
+        ).to_dict()
+    ), HTTPStatus.CREATED
 
 
 @app.route('/api/id/<string:short>/', methods=['GET'])
 def redirect_to_url_api(short):
-    try:
+    urlmap = URLMap.get_object(short)
+    if urlmap is not None:
         return jsonify(
-            URLMap.get_object(short).first_or_404().to_dict(is_get=True)
+            urlmap.to_dict(is_get=True)
         ), HTTPStatus.OK
-    except Exception:
-        raise InvalidAPIUsage(URL_NOT_EXISTS, HTTPStatus.NOT_FOUND)
+    raise InvalidAPIUsage(URL_NOT_EXISTS, HTTPStatus.NOT_FOUND)

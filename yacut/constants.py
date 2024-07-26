@@ -1,5 +1,5 @@
-import os
 import string
+import sys
 
 UNEXPECTED_NAME = 'Указано недопустимое имя для короткой ссылки'
 TOO_MANY_ATTEMPTS = (
@@ -17,10 +17,14 @@ REQUIRED_FIELD = 'Обязательное поле!'
 URLFIELD_ONLY = 'Поле для ссылки!'
 ACCEPT = 'Добавить'
 DB_ERROR = 'При добавлении в базу данных произошла ошибка: {error}'
-MAX_ORIGINAL_LENGTH = 1024
+URL_SUCCESSFULLY_SHORTED = 'URL был успешно укорочен!'
+URL_SHORT_ERROR = 'При укорачивании URL произошла ошибка : {error}'
+MAX_ORIGINAL_LENGTH = sys.maxsize
+CANNOT_BE_MORE_MAX_ORIGINAL = (
+    f'Оригинальная ссылка не может быть больше {MAX_ORIGINAL_LENGTH} символов'
+)
 MAX_SHORT_LENGTH = 16
 SHORT_BASE_LENGTH = 6
 MAX_ATTEMPTS = 10
-BASE_URL = os.getenv('BASE_URL', 'http://localhost/')
 ACCEPTED_SYMBOLS = string.ascii_letters + string.digits
-REGEXP_ACCEPTED_SYMBOLS = f'^[{ACCEPTED_SYMBOLS}]*$'
+REGEXP_ACCEPTED_SYMBOLS = f'[{ACCEPTED_SYMBOLS}]*$'

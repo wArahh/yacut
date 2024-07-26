@@ -1,8 +1,10 @@
 from http import HTTPStatus
 
 from flask import jsonify, render_template
+from sqlalchemy import exc
 
-from . import app
+from . import app, db
+from .constants import DB_ERROR
 
 
 class InvalidAPIUsage(Exception):
@@ -22,4 +24,10 @@ def invalid_api_usage(error):
 
 @app.errorhandler(HTTPStatus.NOT_FOUND)
 def page_not_found(error):
-    return render_template('404.html'), HTTPStatus.NOT_FOUND
+    try:
+        return render_template('404.html'), HTTPStatus.NOT_FOUND
+    except exc.SQLAlchemyError as e:
+        db.session.rollback()
+        return InvalidAPIUsage(
+            DB_ERROR.format(error=e), HTTPStatus.INTERNAL_SERVER_ERROR
+        )

@@ -22,29 +22,23 @@ FLASK_DEBUG=1
 DATABASE_URI=sqlite:///db.sqlite3
 SECRET_KEY=YOUR_SECRET_KEY
 ```
-### создайте базу данных командами:
-```angular2html
-flask db init
+### запустите базу данных командой:
 ```
-```angular2html
-flask db migrate
-```
-```angular2html
 flask db upgrade
 ```
 ### запустите проект командой
 ```
 flask run
 ```
-### документация к api лежит в файле 
-```
-openapi.yml
-```
+### Документацию вы можете посмотреть тут
+
+[wArah YaCut Documentation](https://github.com/wArahh/yacut/blob/master/openapi.yml).
+
 
 
 ## Стек
 - Python 3.9
 - flask 3.0.2
-- Prettytable
+- SQLAlchemy 2.0.21
 ## Автор
 - [Макаренко Никита](https://github.com/wArahh)
