@@ -1,7 +1,8 @@
+from http import HTTPStatus
+
 from flask import jsonify, render_template
 
 from . import app
-from .constants import NOT_EXISTS_404
 
 
 class InvalidAPIUsage(Exception):
@@ -19,6 +20,6 @@ def invalid_api_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
 
-@app.errorhandler(NOT_EXISTS_404)
+@app.errorhandler(HTTPStatus.NOT_FOUND)
 def page_not_found(error):
-    return render_template('404.html'), NOT_EXISTS_404
+    return render_template('404.html'), HTTPStatus.NOT_FOUND
