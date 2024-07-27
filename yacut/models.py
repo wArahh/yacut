@@ -6,9 +6,11 @@ from flask import request
 
 from yacut import db
 
-from .constants import (ACCEPTED_SYMBOLS, MAX_ATTEMPTS, MAX_ORIGINAL_LENGTH,
-                        MAX_SHORT_LENGTH, REGEXP_ACCEPTED_SYMBOLS,
-                        SHORT_BASE_LENGTH, TOO_MANY_ATTEMPTS)
+from .constants import (
+    ACCEPTED_SYMBOLS, MAX_ATTEMPTS, MAX_ORIGINAL_LENGTH,
+    MAX_SHORT_LENGTH, REGEXP_ACCEPTED_SYMBOLS,
+    SHORT_BASE_LENGTH, TOO_MANY_ATTEMPTS
+)
 
 
 class URLMap(db.Model):
@@ -64,5 +66,6 @@ class URLMap(db.Model):
             )
         return dict(
             url=self.original,
-            short_link=request.host_url + self.short
+            short_link=f"{request.host_url.rstrip('/') }"
+                       f"/{self.short.lstrip('/')}"
         )

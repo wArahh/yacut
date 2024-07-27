@@ -2,7 +2,8 @@ from flask import flash, redirect, render_template, url_for
 
 from . import app
 from .constants import (
-    REDIRECT_URL, UNEXPECTED_NAME, URL_ALREADY_EXISTS, DB_ERROR
+    DB_ERROR, REDIRECT_URL, UNEXPECTED_NAME,
+    URL_ALREADY_EXISTS
 )
 from .forms import URLForm
 from .models import URLMap
