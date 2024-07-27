@@ -1,7 +1,9 @@
 from flask import flash, redirect, render_template, url_for
 
 from . import app
-from .constants import REDIRECT_URL, URL_SHORT_ERROR
+from .constants import (
+    REDIRECT_URL, UNEXPECTED_NAME, URL_ALREADY_EXISTS, URL_SHORT_ERROR
+)
 from .forms import URLForm
 from .models import URLMap
 
@@ -18,7 +20,10 @@ def assigning_link_view():
             short_link=url_for(
                 REDIRECT_URL,
                 short=URLMap.create(
-                    form.original_link.data, form.custom_id.data
+                    original=form.original_link.data,
+                    short=form.custom_id.data,
+                    unexpected_name_error=ValueError(UNEXPECTED_NAME),
+                    url_already_exists_error=ValueError(URL_ALREADY_EXISTS),
                 ).short, _external=True
             )
         )

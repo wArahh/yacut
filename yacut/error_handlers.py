@@ -1,9 +1,8 @@
 from http import HTTPStatus
 
 from flask import jsonify, render_template
-from sqlalchemy import exc
 
-from . import app, db
+from . import app
 
 
 class InvalidAPIUsage(Exception):
@@ -23,7 +22,4 @@ def invalid_api_usage(error):
 
 @app.errorhandler(HTTPStatus.NOT_FOUND)
 def page_not_found(error):
-    try:
-        return render_template('404.html'), HTTPStatus.NOT_FOUND
-    except exc.SQLAlchemyError:
-        db.session.rollback()
+    return render_template('404.html'), HTTPStatus.NOT_FOUND

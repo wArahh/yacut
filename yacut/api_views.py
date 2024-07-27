@@ -1,13 +1,10 @@
-import re
 from http import HTTPStatus
 
 from flask import jsonify, request
 
 from . import app
 from .constants import (
-    CANNOT_BE_MORE_MAX_ORIGINAL, MAX_ORIGINAL_LENGTH,
-    MAX_SHORT_LENGTH, MUST_SET_REQUIRED_FIELD,
-    REGEXP_ACCEPTED_SYMBOLS, REQUEST_IS_NONE,
+    MUST_SET_REQUIRED_FIELD, REQUEST_IS_NONE,
     UNEXPECTED_NAME, URL_ALREADY_EXISTS, URL_NOT_EXISTS
 )
 from .error_handlers import InvalidAPIUsage
@@ -25,24 +22,16 @@ def assigning_link():
                 must_set='"url"'
             ), HTTPStatus.BAD_REQUEST
         )
-    original = data['url']
-    short = data.get('custom_id')
-    if short is None:
-        short = URLMap.generate_unique_short()
-    if (
-            len(short) > MAX_SHORT_LENGTH
-            or not re.match(REGEXP_ACCEPTED_SYMBOLS, short)
-    ):
-        raise InvalidAPIUsage(UNEXPECTED_NAME, HTTPStatus.BAD_REQUEST)
-    if len(original) > MAX_ORIGINAL_LENGTH:
-        raise ValueError(CANNOT_BE_MORE_MAX_ORIGINAL)
-    if URLMap.get(short) is not None:
-        raise InvalidAPIUsage(
-            URL_ALREADY_EXISTS, HTTPStatus.BAD_REQUEST
-        )
     try:
         return jsonify(URLMap.create(
-            original, short
+            original=data['url'],
+            short=data.get('custom_id'),
+            unexpected_name_error=InvalidAPIUsage(
+                UNEXPECTED_NAME, HTTPStatus.BAD_REQUEST
+            ),
+            url_already_exists_error=InvalidAPIUsage(
+                URL_ALREADY_EXISTS, HTTPStatus.BAD_REQUEST
+            )
         ).to_dict()), HTTPStatus.CREATED
     except InvalidAPIUsage as error:
         raise error
