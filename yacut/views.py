@@ -2,7 +2,7 @@ from flask import flash, redirect, render_template, url_for
 
 from . import app
 from .constants import (
-    REDIRECT_URL, UNEXPECTED_NAME, URL_ALREADY_EXISTS, URL_SHORT_ERROR
+    REDIRECT_URL, UNEXPECTED_NAME, URL_ALREADY_EXISTS, DB_ERROR
 )
 from .forms import URLForm
 from .models import URLMap
@@ -27,8 +27,8 @@ def assigning_link_view():
                 ).short, _external=True
             )
         )
-    except URL_SHORT_ERROR:
-        flash(URL_SHORT_ERROR)
+    except ValueError as error:
+        flash(DB_ERROR.format(error=error))
         return render_template('index.html', form=form)
 
 
