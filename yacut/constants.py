@@ -1,5 +1,4 @@
 import string
-import sys
 
 UNEXPECTED_NAME = 'Указано недопустимое имя для короткой ссылки'
 TOO_MANY_ATTEMPTS = (
@@ -18,8 +17,8 @@ URLFIELD_ONLY = 'Поле для ссылки!'
 ACCEPT = 'Добавить'
 DB_ERROR = 'При добавлении в базу данных произошла ошибка: {error}'
 URL_SUCCESSFULLY_SHORTED = 'URL был успешно укорочен!'
-URL_SHORT_ERROR = 'При укорачивании URL произошла ошибка : {error}'
-MAX_ORIGINAL_LENGTH = sys.maxsize
+URL_SHORT_ERROR = 'При укорачивании URL произошла ошибка'
+MAX_ORIGINAL_LENGTH = 4096
 CANNOT_BE_MORE_MAX_ORIGINAL = (
     f'Оригинальная ссылка не может быть больше {MAX_ORIGINAL_LENGTH} символов'
 )
@@ -28,3 +27,4 @@ SHORT_BASE_LENGTH = 6
 MAX_ATTEMPTS = 10
 ACCEPTED_SYMBOLS = string.ascii_letters + string.digits
 REGEXP_ACCEPTED_SYMBOLS = f'[{ACCEPTED_SYMBOLS}]*$'
+REDIRECT_URL = 'redirect_to_url'

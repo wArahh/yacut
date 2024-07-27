@@ -32,5 +32,5 @@ class URLForm(FlaskForm):
 
     def validate_custom_id(self, field):
         custom_id = field.data
-        if custom_id is None or URLMap.get_object(custom_id):
+        if custom_id is None or URLMap.get(custom_id):
             raise ValidationError(SHORT_ALREADY_EXIST)

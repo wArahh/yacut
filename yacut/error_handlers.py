@@ -4,7 +4,6 @@ from flask import jsonify, render_template
 from sqlalchemy import exc
 
 from . import app, db
-from .constants import DB_ERROR
 
 
 class InvalidAPIUsage(Exception):
@@ -26,8 +25,5 @@ def invalid_api_usage(error):
 def page_not_found(error):
     try:
         return render_template('404.html'), HTTPStatus.NOT_FOUND
-    except exc.SQLAlchemyError as e:
+    except exc.SQLAlchemyError:
         db.session.rollback()
-        return InvalidAPIUsage(
-            DB_ERROR.format(error=e), HTTPStatus.INTERNAL_SERVER_ERROR
-        )

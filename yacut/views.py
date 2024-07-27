@@ -1,7 +1,7 @@
 from flask import flash, redirect, render_template, url_for
 
 from . import app
-from .constants import URL_SHORT_ERROR, URL_SUCCESSFULLY_SHORTED
+from .constants import REDIRECT_URL, URL_SHORT_ERROR
 from .forms import URLForm
 from .models import URLMap
 
@@ -9,29 +9,26 @@ from .models import URLMap
 @app.route('/', methods=['GET', 'POST'])
 def assigning_link_view():
     form = URLForm()
-    if form.validate_on_submit():
-        try:
-            flash(
-                URL_SUCCESSFULLY_SHORTED
+    if not form.validate_on_submit():
+        return render_template('index.html', form=form)
+    try:
+        return render_template(
+            'index.html',
+            form=form,
+            short_link=url_for(
+                REDIRECT_URL,
+                short=URLMap.create(
+                    form.original_link.data, form.custom_id.data
+                ).short, _external=True
             )
-            return render_template(
-                'index.html',
-                form=form,
-                short_link=url_for(
-                    'redirect_to_url',
-                    short=URLMap.create(
-                        form.original_link.data, form.custom_id.data
-                    ).short, _external=True
-                )
-            )
-        except Exception as error:
-            flash(URL_SHORT_ERROR.format(error=error))
-            return render_template('index.html', form=form)
-    return render_template('index.html', form=form)
+        )
+    except URL_SHORT_ERROR:
+        flash(URL_SHORT_ERROR)
+        return render_template('index.html', form=form)
 
 
 @app.route('/<string:short>', methods=['GET'])
 def redirect_to_url(short):
     return redirect(
-        URLMap.get_object_or_404(short).original
+        URLMap.get_or_404(short).original
     )
