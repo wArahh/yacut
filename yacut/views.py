@@ -25,7 +25,7 @@ def assigning_link_view():
             )
         )
     except ShortURLError as error:
-        flash(error)
+        flash(error,)
         return render_template('index.html', form=form)
     except DuplicateShortURLError as error:
         flash(error)
