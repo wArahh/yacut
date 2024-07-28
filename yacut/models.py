@@ -44,8 +44,9 @@ class URLMap(db.Model):
                     raise ShortURLError(UNEXPECTED_NAME)
                 if URLMap.get(short) is not None:
                     raise DuplicateShortURLError(URL_ALREADY_EXISTS)
-        if len(original) > MAX_ORIGINAL_LENGTH:
-            raise ShortURLError(UNEXPECTED_NAME)
+        if not validated:
+            if len(original) > MAX_ORIGINAL_LENGTH:
+                raise ShortURLError(UNEXPECTED_NAME)
         url_map = URLMap(original=original, short=short)
         db.session.add(url_map)
         db.session.commit()
