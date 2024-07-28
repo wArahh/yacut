@@ -8,6 +8,7 @@ from .constants import (
     UNEXPECTED_NAME, URL_ALREADY_EXISTS, URL_NOT_EXISTS
 )
 from .error_handlers import InvalidAPIUsage
+from .exceptions import DuplicateShortURLError, ShortURLError
 from .models import URLMap
 
 
@@ -26,15 +27,11 @@ def assigning_link():
         return jsonify(URLMap.create(
             original=data['url'],
             short=data.get('custom_id'),
-            unexpected_name_error=InvalidAPIUsage(
-                UNEXPECTED_NAME, HTTPStatus.BAD_REQUEST
-            ),
-            url_already_exists_error=InvalidAPIUsage(
-                URL_ALREADY_EXISTS, HTTPStatus.BAD_REQUEST
-            )
         ).to_dict()), HTTPStatus.CREATED
-    except InvalidAPIUsage as error:
-        raise error
+    except ShortURLError:
+        raise InvalidAPIUsage(UNEXPECTED_NAME, HTTPStatus.BAD_REQUEST)
+    except DuplicateShortURLError:
+        raise InvalidAPIUsage(URL_ALREADY_EXISTS, HTTPStatus.BAD_REQUEST)
 
 
 @app.route('/api/id/<string:short>/', methods=['GET'])

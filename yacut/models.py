@@ -9,8 +9,10 @@ from yacut import db
 from .constants import (
     ACCEPTED_SYMBOLS, MAX_ATTEMPTS, MAX_ORIGINAL_LENGTH,
     MAX_SHORT_LENGTH, REGEXP_ACCEPTED_SYMBOLS,
-    SHORT_BASE_LENGTH, TOO_MANY_ATTEMPTS
+    SHORT_BASE_LENGTH, TOO_MANY_ATTEMPTS, UNEXPECTED_NAME,
+    URL_ALREADY_EXISTS
 )
+from .exceptions import DuplicateShortURLError, ShortURLError
 
 
 class URLMap(db.Model):
@@ -28,12 +30,7 @@ class URLMap(db.Model):
         return URLMap.query.filter_by(short=short).first_or_404()
 
     @staticmethod
-    def create(
-            original,
-            unexpected_name_error,
-            url_already_exists_error,
-            short=None,
-    ):
+    def create(original, short=None):
         if short is None:
             short = URLMap.generate_unique_short()
         if (
@@ -41,9 +38,9 @@ class URLMap(db.Model):
                 or len(original) > MAX_ORIGINAL_LENGTH
                 or not re.match(REGEXP_ACCEPTED_SYMBOLS, short)
         ):
-            raise unexpected_name_error
+            raise ShortURLError(UNEXPECTED_NAME)
         if URLMap.get(short) is not None:
-            raise url_already_exists_error
+            raise DuplicateShortURLError(URL_ALREADY_EXISTS)
         url_map = URLMap(original=original, short=short)
         db.session.add(url_map)
         db.session.commit()
