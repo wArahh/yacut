@@ -2,7 +2,7 @@ import random
 import re
 from datetime import datetime
 
-from flask import request
+from flask import url_for
 
 from yacut import db
 
@@ -63,6 +63,9 @@ class URLMap(db.Model):
             )
         return dict(
             url=self.original,
-            short_link=f"{request.host_url.rstrip('/') }"
-                       f"/{self.short.lstrip('/')}"
+            short_link=url_for(
+                'redirect_to_url',
+                short=self.short,
+                _external=True
+            )
         )
