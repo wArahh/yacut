@@ -5,7 +5,9 @@ from flask import jsonify, request
 from . import app
 from .constants import MUST_SET_REQUIRED_FIELD, REQUEST_IS_NONE, URL_NOT_EXISTS
 from .error_handlers import InvalidAPIUsage
-from .exceptions import DuplicateShortURLError, ShortURLError
+from .exceptions import (
+    DuplicateShortURLError, ShortURLError, TooManyAttemptsError
+)
 from .models import URLMap
 
 
@@ -25,7 +27,11 @@ def assigning_link():
             original=data['url'],
             short=data.get('custom_id'),
         ).to_dict()), HTTPStatus.CREATED
-    except (ShortURLError, DuplicateShortURLError) as error:
+    except (
+        ShortURLError,
+        DuplicateShortURLError,
+        TooManyAttemptsError
+    ) as error:
         raise InvalidAPIUsage(str(error), HTTPStatus.BAD_REQUEST)
 
 

@@ -8,3 +8,7 @@ class ShortURLError(URLMapError):
 
 class DuplicateShortURLError(URLMapError):
     pass
+
+
+class TooManyAttemptsError(URLMapError):
+    pass

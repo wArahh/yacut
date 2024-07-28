@@ -1,10 +1,12 @@
-from flask import flash, redirect, render_template, url_for
+from flask import flash, redirect, render_template
 
 from . import app
-from .constants import REDIRECT_URL
-from .exceptions import DuplicateShortURLError, ShortURLError
+from .exceptions import (
+    DuplicateShortURLError, ShortURLError, TooManyAttemptsError
+)
 from .forms import URLForm
 from .models import URLMap
+from .utils import get_short_link
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -16,16 +18,19 @@ def assigning_link_view():
         return render_template(
             'index.html',
             form=form,
-            short_link=url_for(
-                REDIRECT_URL,
-                short=URLMap.create(
+            short_link=get_short_link(
+                URLMap.create(
                     original=form.original_link.data,
                     short=form.custom_id.data,
-                    form=True
-                ).short, _external=True
+                    validated=True
+                ).short
             )
         )
-    except (ShortURLError, DuplicateShortURLError) as error:
+    except (
+        ShortURLError,
+        DuplicateShortURLError,
+        TooManyAttemptsError
+    ) as error:
         flash(str(error))
         return render_template('index.html', form=form)
 

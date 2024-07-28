@@ -2,8 +2,6 @@ import random
 import re
 from datetime import datetime
 
-from flask import url_for
-
 from yacut import db
 
 from .constants import (
@@ -12,7 +10,10 @@ from .constants import (
     SHORT_BASE_LENGTH, TOO_MANY_ATTEMPTS, UNEXPECTED_NAME,
     URL_ALREADY_EXISTS
 )
-from .exceptions import DuplicateShortURLError, ShortURLError
+from .exceptions import (
+    DuplicateShortURLError, ShortURLError, TooManyAttemptsError
+)
+from .utils import get_short_link
 
 
 class URLMap(db.Model):
@@ -30,19 +31,18 @@ class URLMap(db.Model):
         return URLMap.query.filter_by(short=short).first_or_404()
 
     @staticmethod
-    def create(original, short=None, form=False):
+    def create(original, short=None, validated=False):
         if short is None:
             short = URLMap.generate_unique_short()
-        else:
-            if not form:
-                if (
-                    len(short) > MAX_SHORT_LENGTH
-                    or len(original) > MAX_ORIGINAL_LENGTH
-                    or not re.match(REGEXP_ACCEPTED_SYMBOLS, short)
-                ):
-                    raise ShortURLError(UNEXPECTED_NAME)
-                if URLMap.get(short) is not None:
-                    raise DuplicateShortURLError(URL_ALREADY_EXISTS)
+        if not validated:
+            if (
+                len(short) > MAX_SHORT_LENGTH
+                or len(original) > MAX_ORIGINAL_LENGTH
+                or not re.match(REGEXP_ACCEPTED_SYMBOLS, short)
+            ):
+                raise ShortURLError(UNEXPECTED_NAME)
+            if URLMap.get(short) is not None:
+                raise DuplicateShortURLError(URL_ALREADY_EXISTS)
         url_map = URLMap(original=original, short=short)
         db.session.add(url_map)
         db.session.commit()
@@ -56,7 +56,7 @@ class URLMap(db.Model):
             )
             if URLMap.get(short) is None:
                 return short
-        raise ShortURLError(TOO_MANY_ATTEMPTS)
+        raise TooManyAttemptsError(TOO_MANY_ATTEMPTS)
 
     def to_dict(self, is_get=False):
         if is_get:
@@ -65,9 +65,5 @@ class URLMap(db.Model):
             )
         return dict(
             url=self.original,
-            short_link=url_for(
-                'redirect_to_url',
-                short=self.short,
-                _external=True
-            )
+            short_link=get_short_link(self.short)
         )
