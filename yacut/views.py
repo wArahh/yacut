@@ -6,7 +6,6 @@ from .exceptions import (
 )
 from .forms import URLForm
 from .models import URLMap
-from .utils import get_short_link
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -18,7 +17,7 @@ def assigning_link_view():
         return render_template(
             'index.html',
             form=form,
-            short_link=get_short_link(
+            short_link=URLMap.get_short_link(
                 URLMap.create(
                     original=form.original_link.data,
                     short=form.custom_id.data,

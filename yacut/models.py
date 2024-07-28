@@ -2,18 +2,19 @@ import random
 import re
 from datetime import datetime
 
+from flask import url_for
+
 from yacut import db
 
 from .constants import (
     ACCEPTED_SYMBOLS, MAX_ATTEMPTS, MAX_ORIGINAL_LENGTH,
-    MAX_SHORT_LENGTH, REGEXP_ACCEPTED_SYMBOLS,
-    SHORT_BASE_LENGTH, TOO_MANY_ATTEMPTS, UNEXPECTED_NAME,
-    URL_ALREADY_EXISTS
+    MAX_SHORT_LENGTH, REDIRECT_URL,
+    REGEXP_ACCEPTED_SYMBOLS, SHORT_BASE_LENGTH,
+    TOO_MANY_ATTEMPTS, UNEXPECTED_NAME, URL_ALREADY_EXISTS
 )
 from .exceptions import (
     DuplicateShortURLError, ShortURLError, TooManyAttemptsError
 )
-from .utils import get_short_link
 
 
 class URLMap(db.Model):
@@ -34,15 +35,16 @@ class URLMap(db.Model):
     def create(original, short=None, validated=False):
         if short is None:
             short = URLMap.generate_unique_short()
-        if not validated:
-            if (
-                len(short) > MAX_SHORT_LENGTH
-                or len(original) > MAX_ORIGINAL_LENGTH
-                or not re.match(REGEXP_ACCEPTED_SYMBOLS, short)
-            ):
-                raise ShortURLError(UNEXPECTED_NAME)
-            if URLMap.get(short) is not None:
-                raise DuplicateShortURLError(URL_ALREADY_EXISTS)
+        else:
+            if not validated:
+                if (
+                    len(short) > MAX_SHORT_LENGTH
+                    or len(original) > MAX_ORIGINAL_LENGTH
+                    or not re.match(REGEXP_ACCEPTED_SYMBOLS, short)
+                ):
+                    raise ShortURLError(UNEXPECTED_NAME)
+                if URLMap.get(short) is not None:
+                    raise DuplicateShortURLError(URL_ALREADY_EXISTS)
         url_map = URLMap(original=original, short=short)
         db.session.add(url_map)
         db.session.commit()
@@ -58,6 +60,14 @@ class URLMap(db.Model):
                 return short
         raise TooManyAttemptsError(TOO_MANY_ATTEMPTS)
 
+    @staticmethod
+    def get_short_link(short):
+        return url_for(
+            REDIRECT_URL,
+            short=short,
+            _external=True
+        )
+
     def to_dict(self, is_get=False):
         if is_get:
             return dict(
@@ -65,5 +75,5 @@ class URLMap(db.Model):
             )
         return dict(
             url=self.original,
-            short_link=get_short_link(self.short)
+            short_link=URLMap.get_short_link(self.short)
         )
