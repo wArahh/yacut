@@ -21,14 +21,12 @@ def assigning_link_view():
                 short=URLMap.create(
                     original=form.original_link.data,
                     short=form.custom_id.data,
+                    form=True
                 ).short, _external=True
             )
         )
-    except ShortURLError as error:
-        flash(error)
-        return render_template('index.html', form=form)
-    except DuplicateShortURLError as error:
-        flash(error)
+    except (ShortURLError, DuplicateShortURLError) as error:
+        flash(str(error))
         return render_template('index.html', form=form)
 
 

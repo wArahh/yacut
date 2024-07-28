@@ -30,17 +30,19 @@ class URLMap(db.Model):
         return URLMap.query.filter_by(short=short).first_or_404()
 
     @staticmethod
-    def create(original, short=None):
+    def create(original, short=None, form=False):
         if short is None:
             short = URLMap.generate_unique_short()
-        if (
-                len(short) > MAX_SHORT_LENGTH
-                or len(original) > MAX_ORIGINAL_LENGTH
-                or not re.match(REGEXP_ACCEPTED_SYMBOLS, short)
-        ):
-            raise ShortURLError(UNEXPECTED_NAME)
-        if URLMap.get(short) is not None:
-            raise DuplicateShortURLError(URL_ALREADY_EXISTS)
+        else:
+            if not form:
+                if (
+                    len(short) > MAX_SHORT_LENGTH
+                    or len(original) > MAX_ORIGINAL_LENGTH
+                    or not re.match(REGEXP_ACCEPTED_SYMBOLS, short)
+                ):
+                    raise ShortURLError(UNEXPECTED_NAME)
+                if URLMap.get(short) is not None:
+                    raise DuplicateShortURLError(URL_ALREADY_EXISTS)
         url_map = URLMap(original=original, short=short)
         db.session.add(url_map)
         db.session.commit()
@@ -54,7 +56,7 @@ class URLMap(db.Model):
             )
             if URLMap.get(short) is None:
                 return short
-        raise RuntimeError(TOO_MANY_ATTEMPTS)
+        raise ShortURLError(TOO_MANY_ATTEMPTS)
 
     def to_dict(self, is_get=False):
         if is_get:
